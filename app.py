@@ -7,20 +7,22 @@ app = Flask(__name__)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 @app.route("/", methods=["GET", "POST"])
-def hello_world():
+def belief():
     if request.method == "POST":
 
-#TODO:  Write Python code to take a claim string, search for it via DuckDuckGo/Google Books/Podcast Index/YouTube, 
-        # fetch results, and collect titles and links. Print out a rough list of findings
+        #TODO:  Write Python code to take a claim string, search for it via DuckDuckGo/Google Books/Podcast Index/YouTube, 
+            # fetch results, and collect titles and links. Print out a rough list of findings
         
         belief = request.form.get("belief")
 
         if not belief:
             return redirect("/")
-# TODO: Redirect to different html page that has the results.
-        return redirect("/") 
+
+        return redirect("/results") 
 
     else:
         return render_template("index.html")
 
-
+@app.route("/results")
+def results():
+    return render_template("results.html")
