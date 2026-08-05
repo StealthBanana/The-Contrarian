@@ -1,11 +1,14 @@
-
 .mytabs {
     display: flex;
     flex-wrap: wrap;
-    max-width: 600px;
-    margin: 50px auto;
-    padding: 25px;
+    max-width: 2000px;
+    margin: 25px auto;
+    padding: 15px;
 }
+
+.mytabs label:hover {
+    background-color: var(--color-highlight);
+} 
 
 .mytabs input[type="radio"] {
     display: none;
@@ -13,14 +16,14 @@
 
 .mytabs label {
     padding: 25px;
-    background: #3E3024;
+    background: var(--color-text);
     font-weight: bold;
 }
 
 .mytabs .tab {
     width: 100%;
-    padding: 20px;
-    background: #F4EFE7;
+    padding: 10px;
+    background: var(--color-surface);
     order: 1;
     display: none;
 }
@@ -34,5 +37,5 @@
 }
 
 .mytabs input[type='radio']:checked + label {
-    background: #6D4C2D;
+    background: var(--color-secondary);
 }
