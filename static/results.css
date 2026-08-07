@@ -16,7 +16,7 @@
 
 .mytabs label {
     padding: 25px;
-    background: var(--color-text);
+    background: var(--color-accent);
     font-weight: bold;
 }
 

@@ -1,4 +1,5 @@
 from flask import Flask, flash, jsonify, redirect, render_template, request, session
+import requests
 
 # Configure application
 app = Flask(__name__)
@@ -20,9 +21,17 @@ def belief():
 
         return redirect("/results") 
 
-    else:
+    else:           
         return render_template("index.html")
 
 @app.route("/results")
 def results():
-    return render_template("results.html")
+
+        #TODO Print to the books section of the results page.
+        
+        url = "https://openlibrary.org/search.json?q=climate+change"
+
+        response = requests.get(url)     
+        response.json()
+
+        return render_template("results.html")
