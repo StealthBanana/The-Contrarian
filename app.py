@@ -1,4 +1,4 @@
-from flask import Flask, flash, jsonify, redirect, render_template, request, session
+from flask import Flask, redirect, render_template, request, url_for
 import requests
 
 # Configure application
@@ -8,30 +8,33 @@ app = Flask(__name__)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 @app.route("/", methods=["GET", "POST"])
-def belief():
+def input():
     if request.method == "POST":
-
-        #TODO:  Write Python code to take a claim string, search for it via DuckDuckGo/Google Books/Podcast Index/YouTube, 
-            # fetch results, and collect titles and links. Print out a rough list of findings
         
-        belief = request.form.get("belief")
+        topic = request.form.get("inputTopic")
+        topic = topic.title()
 
-        if not belief:
+        if not topic:
             return redirect("/")
 
-        return redirect("/results") 
+        return redirect(url_for(('results'), topic=topic))
 
     else:           
         return render_template("index.html")
 
-@app.route("/results")
-def results():
+@app.route("/results/<topic>")
+def results(topic):
+        #TODO: Get all info from all sites, change to correct format
+        # and then pass info to results.html.
+        books = getBooks(topic)
 
-        #TODO Print to the books section of the results page.
-        
-        url = "https://openlibrary.org/search.json?q=climate+change"
+        return render_template("results.html", topic=topic, books=books)
 
-        response = requests.get(url)     
-        response.json()
 
-        return render_template("results.html")
+def getBooks(topic):
+    url = "https://openlibrary.org/search.json?q=the+lord+of+the+rings"
+
+    response = requests.get(url)
+    data = response.json()
+
+    return data
