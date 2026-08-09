@@ -1,5 +1,7 @@
 from flask import Flask, redirect, render_template, request, url_for
 import requests
+from tubescrape import YouTube, YouTubeError, RateLimitError, ProxyBlockedError
+
 
 # Configure application
 app = Flask(__name__)
@@ -28,8 +30,9 @@ def results(topic):
         # and then pass info to results.html.
         books = getBooks(topic)
         podcasts = getPodcasts(topic)
+        videos = getVideos(topic)
 
-        return render_template("results.html", topic=topic, books=books, podcasts=podcasts)
+        return render_template("results.html", topic=topic, books=books, podcasts=podcasts, videos=videos)
 
 
 
@@ -61,3 +64,20 @@ def getPodcasts(topic):
     data = response.json()
 
     return data["results"]
+
+def getVideos(topic):
+    yt = YouTube()
+
+    try:
+        response = yt.search(query=topic, max_results=50, type="video")
+    except RateLimitError:
+        response = "Rate limited, use a proxy"
+        return response
+    except ProxyBlockedError:
+        response = "Proxy blocked by firewall, use residential proxies"
+        return response
+    except YouTubeError as e:
+        response = "YouTube error: {e}"
+        return response
+    
+    return response.videos
