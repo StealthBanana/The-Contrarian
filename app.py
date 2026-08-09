@@ -32,9 +32,12 @@ def results(topic):
 
 
 def getBooks(topic):
-    url = "https://openlibrary.org/search.json?q=the+lord+of+the+rings"
+    urlTopic = topic.split()
+    urlTopic = "+".join(urlTopic)
+
+    url = ''.join(["https://openlibrary.org/search.json?q=", urlTopic])
 
     response = requests.get(url)
     data = response.json()
 
-    return data
+    return data["docs"]

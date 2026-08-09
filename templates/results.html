@@ -16,12 +16,12 @@
                 <ul>
                     {% for book in books %}
                         <li>
-                            <strong>{{ book.title }}</strong>
-                            {% if book.author_name %}
-                                by {{ book.author_name[0] }}
+                            <strong>{{ book["title"] }}</strong>
+                            {% if book["author_name"] %}
+                                by {{ book["author_name"][0] }}
                             {% endif %}
-                            {% if book.first_publish_year %}
-                                ({{ book.first_publish_year }})
+                            {% if book["first_publish_year"] %}
+                                ({{ book["first_publish_year"] }})
                             {% endif %}
                         </li>
                     {% endfor %}
