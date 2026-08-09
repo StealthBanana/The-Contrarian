@@ -27,13 +27,21 @@ def results(topic):
         #TODO: Get all info from all sites, change to correct format
         # and then pass info to results.html.
         books = getBooks(topic)
+        podcasts = getPodcasts(topic)
 
-        return render_template("results.html", topic=topic, books=books)
+        return render_template("results.html", topic=topic, books=books, podcasts=podcasts)
+
+
+
+def urlify(topic):
+    urlTopic = topic.split()
+    urlTopic = "+".join(urlTopic)
+    return urlTopic
+
 
 
 def getBooks(topic):
-    urlTopic = topic.split()
-    urlTopic = "+".join(urlTopic)
+    urlTopic = urlify(topic)
 
     url = ''.join(["https://openlibrary.org/search.json?q=", urlTopic])
 
@@ -41,3 +49,15 @@ def getBooks(topic):
     data = response.json()
 
     return data["docs"]
+
+
+
+def getPodcasts(topic):
+    urlTopic = urlify(topic)
+
+    url = ''.join(["https://itunes.apple.com/search?term=", urlTopic, "&media=podcast"])
+
+    response = requests.get(url)
+    data = response.json()
+
+    return data["results"]
