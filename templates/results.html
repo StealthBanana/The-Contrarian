@@ -43,9 +43,8 @@
                             {% if video.duration %} — {{ video.duration }}{% endif %}
                             <ul>
                                 <li>
-                                    {% if video.url %}
-                                        {{ video.url }}
-                                    {% endif %}
+                                    <a href="{{ video.url }}">{{ video.url }}</a>
+                                </li>
                                 </li>
                             </ul>
                         </li>
@@ -71,44 +70,40 @@
             </div>
 
             <input type="radio" id="tab-research" name="mytabs">
-            <label for="tab-research">Reserch Papers</label>
+            <label for="tab-research">Research Papers</label>
             <div class="tab">
-                <h2>Videos</h2>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, 
-                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-                dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, 
-                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-                dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, 
-                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-                dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, 
-                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-                dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, 
-                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-                dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, 
-                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-                dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                <h2>Research Papers</h2>
+                <ul>
+                {% for paper in researchPapers %}
+                    <li>
+                        <strong>{{ paper.title }}</strong>
+                        {% if paper.authors %}
+                            by {{ paper.authors | join(", ") }}
+                        {% endif %}
+                        <br>
+                        <em>Published: {{ paper.published }}</em>
+                        <br>
+                        {% if paper.summary %}
+                            <p>{{ paper.summary }}</p>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+                </ul>
             </div>
 
             <input type="radio" id="tab-websites" name="mytabs">
-            <label for="tab-websites">Websites</label>
+            <label for="tab-websites">Wiki Articles</label>
             <div class="tab">
-                <h2>Websites</h2>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</p>
-            </div>
-
-            <input type="radio" id="tab-temp" name="mytabs">
-            <label for="tab-temp">Temporary</label>
-            <div class="tab">
-                <h2>Temporary</h2>
-                <p>Lorem ipsum</p>
+                <h2>Wiki Articles</h2>
+                <ul>
+                    {% for article in wikiArticles %}
+                        <li>
+                            <a href="{{ article.link }}" target="_blank">
+                                <strong>{{ article.title }}</strong>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
             </div>
 
         </div>

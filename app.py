@@ -1,7 +1,7 @@
 from flask import Flask, redirect, render_template, request, url_for
 import requests
 from tubescrape import YouTube, YouTubeError, RateLimitError, ProxyBlockedError
-
+import feedparser
 
 # Configure application
 app = Flask(__name__)
@@ -31,8 +31,10 @@ def results(topic):
         books = getBooks(topic)
         podcasts = getPodcasts(topic)
         videos = getVideos(topic)
+        researchPapers = getResearchPapers(topic)
+        wikiArticles = getWikiArticles(topic)
 
-        return render_template("results.html", topic=topic, books=books, podcasts=podcasts, videos=videos)
+        return render_template("results.html", topic=topic, books=books, podcasts=podcasts, videos=videos, researchPapers=researchPapers, wikiArticles=wikiArticles)
 
 
 
@@ -65,6 +67,9 @@ def getPodcasts(topic):
 
     return data["results"]
 
+
+
+
 def getVideos(topic):
     yt = YouTube()
 
@@ -81,3 +86,52 @@ def getVideos(topic):
         return response
     
     return response.videos
+
+
+
+def getResearchPapers(topic):
+    urlTopic = urlify(topic)
+
+    url = f"http://export.arxiv.org/api/query?search_query=all:{urlTopic}&start=0&max_results=50"
+    feed = feedparser.parse(url)
+
+    papers = []
+    for entry in feed.entries:
+        papers.append({
+            "title": entry.title,
+            "link": entry.id,
+            "summary": entry.summary,
+            "authors": [author.name for author in entry.authors],
+            "published": entry.published
+        })
+    return papers
+
+
+
+import requests
+
+def getWikiArticles(topic):
+    url = "https://en.wikipedia.org/w/api.php"
+    params = {
+        "action": "opensearch",
+        "namespace": 0,
+        "search": topic,
+        "limit": 25,
+        "format": "json",
+        "warningsaserror": True
+    }
+
+    headers = {
+        "User-Agent": "TheFellow (https://github.com/StealthBanana/The-Fellow)"
+    }
+
+    response = requests.get(url=url, params=params, headers=headers)
+    data = response.json()
+
+    if "error" in data:
+        # Return a consistent structure
+        return [{"title": f"API error: {data['error']['info']}", "link": "#"}]
+
+    # Zips titles and links together using zip. 
+    articles = [{"title": t, "link": l} for t, l in zip(data[1], data[3])]
+    return articles
