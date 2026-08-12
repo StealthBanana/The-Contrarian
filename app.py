@@ -9,6 +9,7 @@ app = Flask(__name__)
 # Reload templates when they are changed
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
+
 @app.route("/", methods=["GET", "POST"])
 def input():
     if request.method == "POST":
@@ -133,5 +134,6 @@ def getWikiArticles(topic):
         return [{"title": f"API error: {data['error']['info']}", "link": "#"}]
 
     # Zips titles and links together using zip. 
+    # Remember, zip returns tuples that you can use! 
     articles = [{"title": t, "link": l} for t, l in zip(data[1], data[3])]
     return articles
