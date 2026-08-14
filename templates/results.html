@@ -109,6 +109,48 @@
                 </ul>
             </div>
 
+            <input type="radio" id="tab-teachingideas" name="mytabs">
+            <label for="tab-teachingideas">Teaching Ideas</label>
+            <div class="tab">
+                <h2>Teaching Ideas</h2>
+                <p>NOTE: These are recent posts from teacher blogs, matched to your inputted topic by keyword.
+                    Results will vary by topic since these are simply general teaching blogs, and many times may not be all too useful. Click through to read the full post on the original site.</p>
+
+                {% if teachingIdeas %}
+                    <div class="mytabs">
+                        {% for sourceName, sourceData in teachingIdeas.items() %}
+                            <input type="radio" id="subtab-{{ loop.index }}" name="teachingideastabs" {% if loop.first %}checked="checked"{% endif %}>
+                            <label for="subtab-{{ loop.index }}">{{ sourceName }}</label>
+                            <div class="tab">
+                                <h3>{{ sourceName }}</h3>
+                                {% if sourceData.error %}
+                                    <p>{{ sourceData.error }}</p>
+                                {% elif sourceData.entries|length == 0 %}
+                                    <p>No recent posts from {{ sourceName }} matched this topic yet. Try a broader search term, or check back later.</p>
+                                {% else %}
+                                    <ul>
+                                        {% for idea in sourceData.entries %}
+                                            <li>
+                                                <strong><a href="{{ idea.link }}" target="_blank">{{ idea.title }}</a></strong>
+                                                {% if idea.published %}
+                                                    <br>
+                                                    <em>Published: {{ idea.published }}</em>
+                                                {% endif %}
+                                                {% if idea.summary %}
+                                                    <p>{{ idea.summary }}</p>
+                                                {% endif %}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>Teaching ideas are currently unavailable.</p>
+                {% endif %}
+            </div>
+
         </div>
     </body>
 </html>

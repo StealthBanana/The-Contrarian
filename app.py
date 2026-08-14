@@ -2,6 +2,7 @@ from flask import Flask, redirect, render_template, request, url_for
 import requests
 from tubescrape import YouTube, YouTubeError, RateLimitError, ProxyBlockedError
 import feedparser
+import re
 
 # Configure application
 app = Flask(__name__)
@@ -9,11 +10,24 @@ app = Flask(__name__)
 # Reload templates when they are changed
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
+TEACHING_IDEA_FEEDS = {
+    "Cult of Pedagogy": "https://www.cultofpedagogy.com/feed/",
+    "MiddleWeb": "https://www.middleweb.com/feed/",
+    "TeachThought": "https://www.teachthought.com/feed/",
+    "WeAreTeachers": "https://www.weareteachers.com/feed/",
+}
+
+# How many matching posts to keep per source, and how many seconds to wait
+# on a single feed before giving up on it. Acts as a good failsafe! 
+# Note that this idea came from the assistance of AI.
+MAX_IDEAS_PER_SOURCE = 10
+FEED_TIMEOUT_SECONDS = 8
+
 
 @app.route("/", methods=["GET", "POST"])
 def input():
     if request.method == "POST":
-        
+
         topic = request.form.get("inputTopic")
         topic = topic.title()
 
@@ -22,20 +36,29 @@ def input():
 
         return redirect(url_for(('results'), topic=topic))
 
-    else:           
+    else:
         return render_template("index.html")
+
 
 @app.route("/results/<topic>")
 def results(topic):
-        #TODO: Get all info from all sites, change to correct format
-        # and then pass info to results.html.
         books = getBooks(topic)
         podcasts = getPodcasts(topic)
         videos = getVideos(topic)
         researchPapers = getResearchPapers(topic)
         wikiArticles = getWikiArticles(topic)
+        teachingIdeas = getTeachingIdeas(topic)
 
-        return render_template("results.html", topic=topic, books=books, podcasts=podcasts, videos=videos, researchPapers=researchPapers, wikiArticles=wikiArticles)
+        return render_template(
+            "results.html",
+            topic=topic,
+            books=books,
+            podcasts=podcasts,
+            videos=videos,
+            researchPapers=researchPapers,
+            wikiArticles=wikiArticles,
+            teachingIdeas=teachingIdeas
+        )
 
 
 
@@ -85,7 +108,7 @@ def getVideos(topic):
     except YouTubeError as e:
         response = "YouTube error: {e}"
         return response
-    
+
     return response.videos
 
 
@@ -130,10 +153,67 @@ def getWikiArticles(topic):
     data = response.json()
 
     if "error" in data:
-        # Return a consistent structure
         return [{"title": f"API error: {data['error']['info']}", "link": "#"}]
 
     # Zips titles and links together using zip. 
     # Remember, zip returns tuples that you can use! 
     articles = [{"title": t, "link": l} for t, l in zip(data[1], data[3])]
     return articles
+
+
+
+def stripHtml(rawHtml):
+    text = re.sub(r"<[^>]+>", " ", rawHtml)
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
+
+
+
+def getTeachingIdeas(topic, maxPerSource=MAX_IDEAS_PER_SOURCE):
+    topicWords = [word.lower() for word in topic.split() if len(word) > 2]
+
+    ideasBySource = {}
+
+    headers = {
+        "User-Agent": "TheFellow (https://github.com/StealthBanana/The-Fellow)"
+    }
+
+    for sourceName, feedUrl in TEACHING_IDEA_FEEDS.items():
+        try:
+            response = requests.get(feedUrl, headers=headers, timeout=FEED_TIMEOUT_SECONDS)
+            response.raise_for_status()
+        except requests.exceptions.Timeout:
+            ideasBySource[sourceName] = {"error": f"{sourceName} took too long to respond. Try again later."}
+            continue
+        except requests.exceptions.RequestException as e:
+            ideasBySource[sourceName] = {"error": f"Could not reach {sourceName} right now ({e})."}
+            continue
+
+        feed = feedparser.parse(response.content)
+
+        if feed.bozo and not feed.entries:
+            ideasBySource[sourceName] = {"error": f"{sourceName}'s feed could not be read right now."}
+            continue
+
+        matches = []
+        for entry in feed.entries:
+            title = entry.get("title", "")
+            summaryRaw = entry.get("summary", "")
+            summary = stripHtml(summaryRaw)
+
+            haystack = f"{title} {summary}".lower()
+
+            if any(word in haystack for word in topicWords):
+                matches.append({
+                    "title": title,
+                    "link": entry.get("link", "#"),
+                    "summary": (summary[:300] + "...") if len(summary) > 300 else summary,
+                    "published": entry.get("published", "")
+                })
+
+            if len(matches) >= maxPerSource:
+                break
+
+        ideasBySource[sourceName] = {"entries": matches}
+
+    return ideasBySource
