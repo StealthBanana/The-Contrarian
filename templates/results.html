@@ -13,19 +13,23 @@
             <label for="tab-books">Books</label>
             <div class="tab">
                 <h2>Books</h2>
-                <ul>
-                    {% for book in books %}
-                        <li>
-                            <strong>{{ book["title"] }}</strong>
-                            {% if book["author_name"] %}
-                                by {{ book["author_name"][0] }}
-                            {% endif %}
-                            {% if book["first_publish_year"] %}
-                                ({{ book["first_publish_year"] }})
-                            {% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
+                {% if books is string %}
+                    <p>Error: {{ books }}</p>
+                {% else %}
+                    <ul>
+                        {% for book in books %}
+                            <li>
+                                <strong>{{ book["title"] }}</strong>
+                                {% if book["author_name"] %}
+                                    by {{ book["author_name"][0] }}
+                                {% endif %}
+                                {% if book["first_publish_year"] %}
+                                    ({{ book["first_publish_year"] }})
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
             </div>
 
             <input type="radio" id="tab-videos" name="mytabs">
@@ -57,38 +61,46 @@
             <label for="tab-podcasts">Podcasts</label>
             <div class="tab">
                 <h2>Podcasts</h2>
-                <ul>
-                    {% for podcast in podcasts %}
-                        <li>
-                            <strong>{{ podcast["trackName"] }} </strong>
-                            {% if podcast["artistName"] %}
-                                by {{ podcast["artistName"] }}
-                            {% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
+                {% if podcasts is string %}
+                    <p>Error: {{ podcasts }}</p>
+                {% else %}
+                    <ul>
+                        {% for podcast in podcasts %}
+                            <li>
+                                <strong>{{ podcast["trackName"] }} </strong>
+                                {% if podcast["artistName"] %}
+                                    by {{ podcast["artistName"] }}
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
             </div>
 
             <input type="radio" id="tab-research" name="mytabs">
             <label for="tab-research">Research Papers</label>
             <div class="tab">
                 <h2>Research Papers</h2>
-                <ul>
-                {% for paper in researchPapers %}
-                    <li>
-                        <strong>{{ paper.title }}</strong>
-                        {% if paper.authors %}
-                            by {{ paper.authors | join(", ") }}
-                        {% endif %}
-                        <br>
-                        <em>Published: {{ paper.published }}</em>
-                        <br>
-                        {% if paper.summary %}
-                            <p>{{ paper.summary }}</p>
-                        {% endif %}
-                    </li>
-                {% endfor %}
-                </ul>
+                {% if researchPapers is string %}
+                    <p>Error: {{ researchPapers }}</p>
+                {% else %}
+                    <ul>
+                    {% for paper in researchPapers %}
+                        <li>
+                            <strong>{{ paper.title }}</strong>
+                            {% if paper.authors %}
+                                by {{ paper.authors | join(", ") }}
+                            {% endif %}
+                            <br>
+                            <em>Published: {{ paper.published }}</em>
+                            <br>
+                            {% if paper.summary %}
+                                <p>{{ paper.summary }}</p>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
             </div>
 
             <input type="radio" id="tab-websites" name="mytabs">
@@ -98,23 +110,30 @@
                 <p>NOTE: Although Wikipedia sometimes carries a certain stigma, its articles are excellent starting points for learning more about a topic. 
                     The sources listed at the bottom of each page provide reliable ways for more research into a topic,
                     and many may surprised to learn that Wikipedia is actually relatively safe and trustworthy itself!</ps>
-                <ul>
-                    {% for article in wikiArticles %}
-                        <li>
-                            <a href="{{ article.link }}" target="_blank">
-                                <strong>{{ article.title }}</strong>
-                            </a>
-                        </li>
-                    {% endfor %}
-                </ul>
+                {% if wikiArticles is string %}
+                    <p>Error: {{ wikiArticles }}</p>
+                {% else %}
+                    <ul>
+                        {% for article in wikiArticles %}
+                            <li>
+                                <a href="{{ article.link }}" target="_blank">
+                                    <strong>{{ article.title }}</strong>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
             </div>
 
             <input type="radio" id="tab-teachingideas" name="mytabs">
             <label for="tab-teachingideas">Teaching Ideas</label>
             <div class="tab">
                 <h2>Teaching Ideas</h2>
-                <p>NOTE: These are recent posts from teacher blogs, matched to your inputted topic by keyword.
-                    Results will vary by topic since these are simply general teaching blogs, and many times may not be all too useful. Click through to read the full post on the original site.</p>
+                <p>
+                    NOTE: These are recent posts from teacher blogs, matched to the inputted topic by keyword. 
+                    Results will vary by topic since these are simply general teaching blogs, and many times may not be all too useful. 
+                    Click through to read the full post on the original site.
+                </p>
 
                 {% if teachingIdeas %}
                     <div class="mytabs">

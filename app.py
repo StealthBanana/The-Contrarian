@@ -1,25 +1,22 @@
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, redirect, render_template, request, Response, url_for, stream_with_context, stream_template
 import requests
 from tubescrape import YouTube, YouTubeError, RateLimitError, ProxyBlockedError
 import feedparser
 import re
 
-# Configure application
 app = Flask(__name__)
 
-# Reload templates when they are changed
 app.config["TEMPLATES_AUTO_RELOAD"] = True
+
 
 TEACHING_IDEA_FEEDS = {
     "Cult of Pedagogy": "https://www.cultofpedagogy.com/feed/",
     "MiddleWeb": "https://www.middleweb.com/feed/",
     "TeachThought": "https://www.teachthought.com/feed/",
-    "WeAreTeachers": "https://www.weareteachers.com/feed/",
+    "WeAreTeachers": "https://www.weareteachers.com/feed/"
 }
 
-# How many matching posts to keep per source, and how many seconds to wait
-# on a single feed before giving up on it. Acts as a good failsafe! 
-# Note that this idea came from the assistance of AI.
+
 MAX_IDEAS_PER_SOURCE = 10
 FEED_TIMEOUT_SECONDS = 8
 
@@ -42,6 +39,11 @@ def input():
 
 @app.route("/results/<topic>")
 def results(topic):
+
+
+#TODO: The reason your code isn't going ot the results page before all data is recieved is because you get the data before you even render the template.
+# Perhaps you could put the code that gets the data into your return statement below, although that would include jsonify-ing.        
+        
         books = getBooks(topic)
         podcasts = getPodcasts(topic)
         videos = getVideos(topic)
@@ -49,7 +51,7 @@ def results(topic):
         wikiArticles = getWikiArticles(topic)
         teachingIdeas = getTeachingIdeas(topic)
 
-        return render_template(
+        return stream_with_context(stream_template(
             "results.html",
             topic=topic,
             books=books,
@@ -58,7 +60,7 @@ def results(topic):
             researchPapers=researchPapers,
             wikiArticles=wikiArticles,
             teachingIdeas=teachingIdeas
-        )
+        ))
 
 
 
@@ -74,8 +76,16 @@ def getBooks(topic):
 
     url = ''.join(["https://openlibrary.org/search.json?q=", urlTopic])
 
-    response = requests.get(url)
-    data = response.json()
+    try:
+        response = requests.get(url, timeout=FEED_TIMEOUT_SECONDS)
+        response.raise_for_status()
+        data = response.json()
+    except requests.exceptions.Timeout:
+        return "Open Library took too long to respond. Try again later."
+    except requests.exceptions.RequestException as e:
+        return f"Could not reach Open Library right now ({e})."
+    except ValueError:
+        return "Open Library returned an unexpected response."
 
     return data["docs"]
 
@@ -86,8 +96,16 @@ def getPodcasts(topic):
 
     url = ''.join(["https://itunes.apple.com/search?term=", urlTopic, "&media=podcast"])
 
-    response = requests.get(url)
-    data = response.json()
+    try:
+        response = requests.get(url, timeout=FEED_TIMEOUT_SECONDS)
+        response.raise_for_status()
+        data = response.json()
+    except requests.exceptions.Timeout:
+        return "iTunes took too long to respond. Try again later."
+    except requests.exceptions.RequestException as e:
+        return f"Could not reach iTunes right now ({e})."
+    except ValueError:
+        return "iTunes returned an unexpected response."
 
     return data["results"]
 
@@ -117,7 +135,19 @@ def getResearchPapers(topic):
     urlTopic = urlify(topic)
 
     url = f"http://export.arxiv.org/api/query?search_query=all:{urlTopic}&start=0&max_results=50"
-    feed = feedparser.parse(url)
+
+    try:
+        response = requests.get(url, timeout=FEED_TIMEOUT_SECONDS)
+        response.raise_for_status()
+    except requests.exceptions.Timeout:
+        return "arXiv took too long to respond. Try again later."
+    except requests.exceptions.RequestException as e:
+        return f"Could not reach arXiv right now ({e})."
+
+    feed = feedparser.parse(response.content)
+
+    if feed.bozo and not feed.entries:
+        return "arXiv returned an unexpected response."
 
     papers = []
     for entry in feed.entries:
@@ -149,8 +179,16 @@ def getWikiArticles(topic):
         "User-Agent": "TheFellow (https://github.com/StealthBanana/The-Fellow)"
     }
 
-    response = requests.get(url=url, params=params, headers=headers)
-    data = response.json()
+    try:
+        response = requests.get(url=url, params=params, headers=headers, timeout=FEED_TIMEOUT_SECONDS)
+        response.raise_for_status()
+        data = response.json()
+    except requests.exceptions.Timeout:
+        return "Wikipedia took too long to respond. Try again later."
+    except requests.exceptions.RequestException as e:
+        return f"Could not reach Wikipedia right now ({e})."
+    except ValueError:
+        return "Wikipedia returned an unexpected response."
 
     if "error" in data:
         return [{"title": f"API error: {data['error']['info']}", "link": "#"}]
@@ -170,6 +208,7 @@ def stripHtml(rawHtml):
 
 
 def getTeachingIdeas(topic, maxPerSource=MAX_IDEAS_PER_SOURCE):
+
     topicWords = [word.lower() for word in topic.split() if len(word) > 2]
 
     ideasBySource = {}
@@ -191,6 +230,8 @@ def getTeachingIdeas(topic, maxPerSource=MAX_IDEAS_PER_SOURCE):
 
         feed = feedparser.parse(response.content)
 
+        # feedparser sets bozo=1 on malformed XML. If it also found zero
+        # entries, it will be treated as a dead/broken feed rather than an empty one! Basically is a good failsafe
         if feed.bozo and not feed.entries:
             ideasBySource[sourceName] = {"error": f"{sourceName}'s feed could not be read right now."}
             continue
