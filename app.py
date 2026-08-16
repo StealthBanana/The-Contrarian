@@ -43,25 +43,16 @@ def results(topic):
 
 #TODO: The reason your code isn't going ot the results page before all data is recieved is because you get the data before you even render the template.
 # Perhaps you could put the code that gets the data into your return statement below, although that would include jsonify-ing.        
-        
-        books = getBooks(topic)
-        podcasts = getPodcasts(topic)
-        videos = getVideos(topic)
-        researchPapers = getResearchPapers(topic)
-        wikiArticles = getWikiArticles(topic)
-        teachingIdeas = getTeachingIdeas(topic)
-
-        return stream_with_context(stream_template(
-            "results.html",
-            topic=topic,
-            books=books,
-            podcasts=podcasts,
-            videos=videos,
-            researchPapers=researchPapers,
-            wikiArticles=wikiArticles,
-            teachingIdeas=teachingIdeas
-        ))
-
+    context = {
+        "topic": topic,
+        "books": getBooks(topic),
+        "podcasts": getPodcasts(topic),
+        "videos": getVideos(topic),
+        "researchPapers": getResearchPapers(topic),
+        "wikiArticles": getWikiArticles(topic),
+        "teachingIdeas": getTeachingIdeas(topic)
+    }
+    return stream_template("results.html",**context)
 
 
 def urlify(topic):
