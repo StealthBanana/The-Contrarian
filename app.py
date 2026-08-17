@@ -52,6 +52,7 @@ def results(topic):
         "wikiArticles": getWikiArticles(topic),
         "teachingIdeas": getTeachingIdeas(topic)
     }
+
     return stream_template("results.html",**context)
 
 
