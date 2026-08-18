@@ -1,29 +1,3 @@
-/* Design Tokens */
-:root {
-  --color-primary:    #6B5843;
-  --color-secondary:  #8A7458;
-  --color-tertiary:   #A08C6D;
-  --color-accent:     #C2A878;
-  --color-highlight:  #D9C7A2;
-  --color-surface:    #F4EFE5;
-  --color-background: #E9E2D5;
-  --color-text:       #2D2923;
-}
-
-body {
-    font-family: Arial, sans-serif;
-    background-color: var(--color-background);
-    margin: 0;
-    padding: 20px;
-}
-h1 {
-    color: var(--color-text);
-}
-p {
-    color: var(--color-text);
-    line-height: 1.5;
-}
-
 #InputInfo {
     opacity: 1;
     visibility: visible;
@@ -46,7 +20,7 @@ p {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #f7f9fb;
+    background-color: var(--color-background);
     transition: opacity 0.75s, visibility 0.75s;
 }
 
@@ -72,4 +46,13 @@ p {
     to{
         transform: rotate(1turn);
     }
+}
+
+#loadInfo {
+    size: 50vw;
+    visibility: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--color-highlight);
 }

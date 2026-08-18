@@ -2,12 +2,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const form = document.querySelector("form");
     const loader = document.querySelector(".loader");
     const inputInfo = document.getElementById("InputInfo");
+    const loadInfo = document.getElementById("loadInfo");
+    const inputTopic = document.getElementsByName('inputTopic')[0]
 
     form.addEventListener("submit", () => {
-        // Fade the loader in and the input section out at the same time.
-        // No need to reverse this afterward -- submitting the form navigates
-        // the browser to /results/<topic>, which unloads this page entirely.
         loader.classList.remove("loader-hidden");
         inputInfo.classList.add("input-info-hidden");
+        loadInfo.textContent = `Getting resources on the topic ${inputTopic.value}.`;
+        loadInfo.style.visibility = "visible";
     });
 });
+
+

@@ -18,7 +18,7 @@ TEACHING_IDEA_FEEDS = {
 
 
 MAX_IDEAS_PER_SOURCE = 10
-FEED_TIMEOUT_SECONDS = 8
+FEED_TIMEOUT_SECONDS = 12
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -40,9 +40,6 @@ def input():
 @app.route("/results/<topic>")
 def results(topic):
 
-
-#TODO: The reason your code isn't going ot the results page before all data is recieved is because you get the data before you even render the template.
-# Perhaps you could put the code that gets the data into your return statement below, although that would include jsonify-ing.        
     context = {
         "topic": topic,
         "books": getBooks(topic),
