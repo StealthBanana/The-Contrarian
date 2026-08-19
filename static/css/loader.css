@@ -16,7 +16,7 @@
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh;
+    height: 50vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -28,6 +28,7 @@
     opacity: 0;
     visibility: hidden;
 }
+
 
 .loader::after{
     content: "";
@@ -49,10 +50,11 @@
 }
 
 #loadInfo {
-    size: 50vw;
+  position: fixed;
+    width: 100vw;
     visibility: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: var(--color-highlight);
+    color: var(--color-text);
 }

@@ -1,4 +1,4 @@
-from flask import Flask, redirect, render_template, request, Response, url_for, stream_with_context, stream_template
+from flask import Flask, redirect, render_template, request, url_for, stream_template
 import requests
 from tubescrape import YouTube, YouTubeError, RateLimitError, ProxyBlockedError
 import feedparser
@@ -24,8 +24,8 @@ FEED_TIMEOUT_SECONDS = 12
 @app.route("/", methods=["GET", "POST"])
 def input():
     if request.method == "POST":
-
-        topic = request.form.get("inputTopic")
+        
+        topic = request.form.get("inputTopic", "")
         topic = topic.title()
 
         if not topic:

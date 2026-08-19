@@ -6,11 +6,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const inputTopic = document.getElementsByName('inputTopic')[0]
 
     form.addEventListener("submit", () => {
-        loader.classList.remove("loader-hidden");
         inputInfo.classList.add("input-info-hidden");
-        loadInfo.textContent = `Getting resources on the topic ${inputTopic.value}.`;
+        inputInfo.addEventListener("transitionend", () => {
+            inputInfo.remove()
+        }, { once: true });
+        loader.classList.remove("loader-hidden");
+        loadInfo.textContent = `Getting resources on: ${inputTopic.value}`;
         loadInfo.style.visibility = "visible";
     });
 });
-
 
