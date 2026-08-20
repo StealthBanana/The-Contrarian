@@ -1,12 +1,12 @@
+
 #InputInfo {
     opacity: 1;
-    visibility: visible;
-    transition: opacity 0.75s, visibility 0.75s;
+    transition: opacity 0.5s, display 0.5s allow-discrete;
 }
 
 .input-info-hidden {
     opacity: 0;
-    visibility: hidden;
+    display: none;
 }
 
 .loader{
@@ -37,7 +37,7 @@
     border: 15px solid;
     border-top-color: var(--color-highlight);
     border-radius: 50%;
-    animation: loading 0.75s ease infinite;
+    animation: loading 1.5s ease infinite;
 }
 
 @keyframes loading {

@@ -4,15 +4,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const inputInfo = document.getElementById("InputInfo");
     const loadInfo = document.getElementById("loadInfo");
     const inputTopic = document.getElementsByName('inputTopic')[0]
-
-    form.addEventListener("submit", () => {
-        inputInfo.classList.add("input-info-hidden");
-        inputInfo.addEventListener("transitionend", () => {
-            inputInfo.remove()
-        }, { once: true });
-        loader.classList.remove("loader-hidden");
+    
+    inputInfo.addEventListener('transitionend', () => {
         loadInfo.textContent = `Getting resources on: ${inputTopic.value}`;
         loadInfo.style.visibility = "visible";
+    })
+    
+    form.addEventListener("mouseover", () => {
+        inputInfo.classList.add("input-info-hidden");
+        loader.classList.remove("loader-hidden");
+
     });
 });
 
