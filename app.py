@@ -24,7 +24,8 @@ FEED_TIMEOUT_SECONDS = 12
 @app.route("/", methods=["GET", "POST"])
 def input():
     if request.method == "POST":
-        
+
+        print("Yo")
         topic = request.form.get("inputTopic", "")
         topic = topic.title()
 

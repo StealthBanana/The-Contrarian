@@ -1,12 +1,11 @@
-
-#InputInfo {
+.inputInfo {
     opacity: 1;
-    transition: opacity 0.5s, display 0.5s allow-discrete;
+    display: block;
+    transition: opacity 0.5s;
 }
 
 .input-info-hidden {
     opacity: 0;
-    display: none;
 }
 
 .loader{
@@ -50,11 +49,13 @@
 }
 
 #loadInfo {
-  position: fixed;
+    position: absolute;
+    top: 50vh;
     width: 100vw;
     visibility: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
     color: var(--color-text);
+    text-align: center;
 }
