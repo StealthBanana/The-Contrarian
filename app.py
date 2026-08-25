@@ -25,7 +25,6 @@ FEED_TIMEOUT_SECONDS = 12
 def input():
     if request.method == "POST":
 
-        print("Yo")
         topic = request.form.get("inputTopic", "")
         topic = topic.title()
 
@@ -84,7 +83,7 @@ def getBooks(topic):
 def getPodcasts(topic):
     urlTopic = urlify(topic)
 
-    url = ''.join(["https://itunes.apple.com/search?term=", urlTopic, "&media=podcast"])
+    url = ''.join(["https://itunes.apple.com/search?term=", urlTopic, "&media=podcast", "&entity=podcast"])
 
     try:
         response = requests.get(url, timeout=FEED_TIMEOUT_SECONDS)
@@ -97,8 +96,8 @@ def getPodcasts(topic):
     except ValueError:
         return "iTunes returned an unexpected response."
 
+    print(data) 
     return data["results"]
-
 
 
 
@@ -148,11 +147,23 @@ def getResearchPapers(topic):
             "authors": [author.name for author in entry.authors],
             "published": entry.published
         })
+# Keeps html clean by only showing at most 3 authors for resaerch papers that may have many more
+    for paper in papers:
+        authorRange = len(paper["authors"])
+        tempList = []
+        if (authorRange > 3):
+            for author in range(3):
+                tempList.append(paper["authors"][author])
+            tempList.append(f"and {authorRange - 3} more")
+            paper["authors"] = tempList
+        else:
+            for i in range(authorRange):
+                tempList.append(paper["authors"][i])
+            paper["authors"] = tempList
+
     return papers
 
 
-
-import requests
 
 def getWikiArticles(topic):
     url = "https://en.wikipedia.org/w/api.php"

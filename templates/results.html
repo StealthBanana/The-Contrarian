@@ -72,6 +72,7 @@
                                     by {{ podcast["artistName"] }}
                                 {% endif %}
                             </li>
+                            
                         {% endfor %}
                     </ul>
                 {% endif %}
@@ -108,8 +109,7 @@
             <div class="tab">
                 <h2>Wiki Articles</h2>
                 <p>NOTE: Although Wikipedia sometimes carries a certain stigma, its articles are excellent starting points for learning more about a topic. 
-                    The sources listed at the bottom of each page provide reliable ways for more research into a topic,
-                    and many may surprised to learn that Wikipedia is actually relatively safe and trustworthy itself!</ps>
+                    The sources listed at the bottom of each page provide reliable ways for more research into a topic!</ps>
                 {% if wikiArticles is string %}
                     <p>Error: {{ wikiArticles }}</p>
                 {% else %}
