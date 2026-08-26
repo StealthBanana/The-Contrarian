@@ -83,7 +83,7 @@ def getBooks(topic):
 def getPodcasts(topic):
     urlTopic = urlify(topic)
 
-    url = ''.join(["https://itunes.apple.com/search?term=", urlTopic, "&media=podcast", "&entity=podcast"])
+    url = ''.join(["https://itunes.apple.com/search?term=", urlTopic, "&media=podcast", "&entity=podcast", "&limit=50"])
 
     try:
         response = requests.get(url, timeout=FEED_TIMEOUT_SECONDS)
@@ -96,7 +96,6 @@ def getPodcasts(topic):
     except ValueError:
         return "iTunes returned an unexpected response."
 
-    print(data) 
     return data["results"]
 
 
@@ -116,6 +115,8 @@ def getVideos(topic):
         response = "YouTube error: {e}"
         return response
 
+    yt.close()
+    
     return response.videos
 
 

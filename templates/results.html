@@ -49,7 +49,15 @@
                                 <li>
                                     <a href="{{ video.url }}">{{ video.url }}</a>
                                 </li>
-                                </li>
+                                {% if video.view_count %}
+                                    <b>{{ video.view_count }}</b>
+                                {% endif %}
+                                
+                                <br>
+                                
+                                {% if video.description_snippet %}
+                                    <em>{{ video.description_snippet }}</em>
+                                {% endif %} 
                             </ul>
                         </li>
                         {% endfor %}
@@ -70,6 +78,10 @@
                                 <strong>{{ podcast["trackName"] }} </strong>
                                 {% if podcast["artistName"] %}
                                     by {{ podcast["artistName"] }}
+                                {% endif %}
+                                <br>
+                                {% if podcast["contentAdvisoryRating"] %}
+                                    <b>Advisory Rating: {{ podcast["contentAdvisoryRating"] }}</b>
                                 {% endif %}
                             </li>
                             
