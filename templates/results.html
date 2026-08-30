@@ -75,7 +75,7 @@
                     <ul>
                         {% for podcast in podcasts %}
                             <li>
-                                <strong>{{ podcast["trackName"] }} </strong>
+                                <a href="{{ podcast['collectionViewUrl'] }}" target="_blank"> <strong>{{ podcast["trackName"] }} </strong> </a>
                                 {% if podcast["artistName"] %}
                                     by {{ podcast["artistName"] }}
                                 {% endif %}
@@ -161,6 +161,7 @@
                                 {% else %}
                                     <ul>
                                         {% for idea in sourceData.entries %}
+                                            {% if "Deal of the Day" not in idea.title and "Teacher Author Spotlight" not in idea.title%}
                                             <li>
                                                 <strong><a href="{{ idea.link }}" target="_blank">{{ idea.title }}</a></strong>
                                                 {% if idea.published %}
@@ -171,6 +172,7 @@
                                                     <p>{{ idea.summary }}</p>
                                                 {% endif %}
                                             </li>
+                                            {% endif %}
                                         {% endfor %}
                                     </ul>
                                 {% endif %}
@@ -181,6 +183,40 @@
                     <p>Teaching ideas are currently unavailable.</p>
                 {% endif %}
             </div>
+
+            <input type="radio" id="tab-audiobooks" name="mytabs">
+            <label for="tab-audiobooks">Audiobooks</label>
+            <div class="tab">
+            <h2>Audiobooks</h2>
+            {% if audiobooks is string %}
+                <p>Error: {{ audiobooks }}</p>
+            {% else %}
+                <ul>
+                    {% for audiobook in audiobooks %}
+                        <li>
+                            <a href="{{ audiobook['collectionViewUrl']}}" target="_blank"> <strong>{{ audiobook["collectionName"] }} </strong> </a>
+                            {% if audiobook["artistName"] %}
+                                by {{ audiobook["artistName"] }}
+                            {% endif %}
+                            <br>
+                            {% if audiobook["collectionExplicitness"] %}
+                                <b>Advisory Rating: {{ audiobook["collectionExplicitness"] }}</b>
+                            {% endif %}
+                            <br>
+                            {% if audiobook["collectionPrice"] %}
+                                <em>Price: {{ audiobook["collectionPrice"] }}</em>
+                            {% endif %}
+                            <br>
+                            {% if audiobook["description"] %}
+                                <p>{{ audiobook["description"] }}</p>
+                            {% endif %}
+                        </li>
+                        
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            </div>
+
 
         </div>
     </body>

@@ -47,7 +47,8 @@ def results(topic):
         "videos": getVideos(topic),
         "researchPapers": getResearchPapers(topic),
         "wikiArticles": getWikiArticles(topic),
-        "teachingIdeas": getTeachingIdeas(topic)
+        "teachingIdeas": getTeachingIdeas(topic),
+        "audiobooks": getAudiobooks(topic)
     }
 
     return stream_template("results.html",**context)
@@ -260,3 +261,25 @@ def getTeachingIdeas(topic, maxPerSource=MAX_IDEAS_PER_SOURCE):
         ideasBySource[sourceName] = {"entries": matches}
 
     return ideasBySource
+
+
+def getAudiobooks(topic):
+    urlTopic = urlify(topic)
+    url = ''.join(["https://itunes.apple.com/search?term=", urlTopic, "&media=audiobook", "&entity=audiobook", "&limit=50"])
+
+    try:
+        response = requests.get(url, timeout=FEED_TIMEOUT_SECONDS)
+        response.raise_for_status()
+        data = response.json()
+    except requests.exceptions.Timeout:
+        return "iTunes took too long to respond. Try again later."
+    except requests.exceptions.RequestException as e:
+        return f"Could not reach iTunes right now ({e})."
+    except ValueError:
+        return "iTunes returned an unexpected response."
+
+    for audiobook in data["results"]:
+        audiobook["description"] = re.sub(r"<.*?>", " ", audiobook["description"])
+
+
+    return data["results"]
