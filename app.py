@@ -48,7 +48,8 @@ def results(topic):
         "researchPapers": getResearchPapers(topic),
         "wikiArticles": getWikiArticles(topic),
         "teachingIdeas": getTeachingIdeas(topic),
-        "audiobooks": getAudiobooks(topic)
+        "audiobooks": getAudiobooks(topic),
+        "images": getImages(topic)
     }
 
     return stream_template("results.html",**context)
@@ -263,6 +264,7 @@ def getTeachingIdeas(topic, maxPerSource=MAX_IDEAS_PER_SOURCE):
     return ideasBySource
 
 
+
 def getAudiobooks(topic):
     urlTopic = urlify(topic)
     url = ''.join(["https://itunes.apple.com/search?term=", urlTopic, "&media=audiobook", "&entity=audiobook", "&limit=50"])
@@ -283,3 +285,50 @@ def getAudiobooks(topic):
 
 
     return data["results"]
+
+
+
+def getImages(topic):
+    urlTopic = urlify(topic)
+    url = "".join(
+            [
+                "https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=",
+                urlTopic,
+                "&gsrnamespace=6&prop=imageinfo&iiprop=url|extmetadata&gsrlimit=50&format=json",
+            ]
+        )
+    
+    headers = {
+        "User-Agent": "TheFellow (https://github.com/StealthBanana/The-Fellow)"
+    }
+
+    try:
+        response = requests.get(
+            url, headers=headers, timeout=FEED_TIMEOUT_SECONDS
+        )
+        response.raise_for_status()
+        data = response.json()
+    except requests.exceptions.Timeout:
+        return "wikiMedia took too long to respond. Try again later."
+    except requests.exceptions.RequestException as e:
+        return f"could not reach wikiMedia right now ({e})."
+    except ValueError:
+        return "wikiMedia returned an unexpected response."
+
+    pages = data.get("query", {}).get("pages", {})
+    cc0_licenses = {"cc0", "pd", "public domain", "cc-zero"}
+
+    filtered_results = []
+    for page in pages.values():
+        image_info = page.get("imageinfo", [{}])[0]
+        license_name = (
+            image_info.get("extmetadata", {})
+            .get("LicenseShortName", {})
+            .get("value", "")
+            .lower()
+        )
+
+        if any(lic in license_name for lic in cc0_licenses):
+            filtered_results.append(image_info)
+
+    return filtered_results

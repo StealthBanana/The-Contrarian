@@ -217,6 +217,23 @@
             {% endif %}
             </div>
 
+            <input type="radio" id="tab-images" name="mytabs">
+            <label for="tab-images">Images</label>
+            <div class="tab">
+                <h2>Images</h2>
+                <p>Free images for use in projects, lessons, and more! These images are under cc0 liscense which means no credit is needed.</p>
+                {% if images is string %}
+                    <p>Error: {{ images }}</p>
+                {% else %}
+                    <div class="image-grid">
+                        {% for image in images %}
+                            <img src="{{ image.url }}" alt="Free CC0 image" style="max-width: 200px; height: auto;" />
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+            </div>
+
 
         </div>
     </body>
